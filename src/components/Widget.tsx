@@ -82,11 +82,11 @@ export default function Widget() {
   }
 
   return (
-    <div className='p-2 bg-[#FFFFFF] max-w-[560px] flex-col items-center justify-center m-2 rounded-[12px] font-jetbrains'>
+    <div className='p-2 sm:p-4 bg-[#FFFFFF] max-w-[560px] flex-col items-center justify-center m-2 rounded-[12px] font-jetbrains'>
       <div className='border-[1px] rounded-[8px] p-4 w-full space-y-6'>
         <h1 className='text-lg font-bold'>Monthly Income Tax Calculator</h1>
         
-        <div className='grid grid-cols-2 gap-6'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
           <div>
             <label className='block mb-2 text-xs font-[500]'>Basic Salary *</label>
             <div className="relative">
@@ -196,7 +196,7 @@ export default function Widget() {
                     <tr className="border-b text-[#A3A3A3]">
                       <th className="text-left py-2 font-normal">Range</th>
                       <th className="text-right py-2 font-normal">Rate</th>
-                      <th className="text-right py-2 font-normal">Amount</th>
+                      <th className="text-right py-2 font-normal hidden sm:table-cell">Amount</th>
                       <th className="text-right py-2 font-normal">Tax Amount</th>
                     </tr>
                   </thead>
@@ -217,7 +217,7 @@ export default function Widget() {
                           {row.range[0]}<br />{row.range[1]}
                         </td>
                         <td className="text-right py-2">{row.rate}</td>
-                        <td className="text-right py-2">{row.amount}</td>
+                        <td className="text-right py-2 hidden sm:table-cell">{row.amount}</td>
                         <td className="text-right py-2">GHS {row.tax}</td>
                       </tr>
                     ))}
