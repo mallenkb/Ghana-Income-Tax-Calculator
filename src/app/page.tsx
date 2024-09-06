@@ -1,9 +1,15 @@
-import GhanaTaxCalculator from '../components/GhanaTaxCalculator'
+import { JetBrains_Mono } from 'next/font/google'
+import Widget from '../components/Widget'
+
+// Load JetBrains Mono font
+const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'] })
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#F7F7F7] flex items-center justify-center p-4">
-      <GhanaTaxCalculator />
+    <main className={`min-h-screen bg-[#F7F7F7] flex flex-col items-center p-4 ${jetbrainsMono.className}`}>
+      <div className="mt-6 w-full max-w-[560px]">
+        <Widget />
+      </div>
     </main>
   )
 }

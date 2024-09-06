@@ -1,0 +1,239 @@
+"use client"
+import { useState, useCallback, useEffect } from 'react'
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import { ChevronDown, ChevronUp } from "lucide-react"
+import { AnimatePresence, motion } from "framer-motion"
+
+export default function Widget() {
+  const [grossBasicSalary, setGrossBasicSalary] = useState("")
+  const [allowances, setAllowances] = useState("")
+  const [monthlyDeductibleRelief, setMonthlyDeductibleRelief] = useState("")
+  const [results, setResults] = useState<any>(null)
+  const [showBreakdown, setShowBreakdown] = useState(false)
+
+  const calculateTax = useCallback((grossRemuneration: number, grossBasicSalary: number, monthlyDeductibleRelief: number): { totalTax: number; breakdown: any; ssnitContribution: number } => {
+    const ssnit = 0.055 * grossBasicSalary;
+    const taxableIncome = grossRemuneration - ssnit - monthlyDeductibleRelief;
+
+    let tax = 0;
+    if (taxableIncome <= 490) tax = 0;
+    else if (taxableIncome <= 600) tax = 0.05 * (taxableIncome - 490);
+    else if (taxableIncome <= 730) tax = 5.5 + 0.10 * (taxableIncome - 600);
+    else if (taxableIncome <= 3896.67) tax = 18.5 + 0.175 * (taxableIncome - 730);
+    else if (taxableIncome <= 19896.67) tax = 572.67 + 0.25 * (taxableIncome - 3896.67);
+    else if (taxableIncome <= 50416.67) tax = 4572.67 + 0.30 * (taxableIncome - 19896.67);
+    else tax = 13728.67 + 0.35 * (taxableIncome - 50416.67);
+
+    return {
+      totalTax: tax,
+      breakdown: {
+        grossRemuneration,
+        ssnit,
+        taxableIncome,
+        tax
+      },
+      ssnitContribution: ssnit
+    };
+  }, [])
+
+  useEffect(() => {
+    const grossBasicSalaryValue = parseFloat(grossBasicSalary.replace(/,/g, '')) || 0
+    const allowancesValue = parseFloat(allowances.replace(/,/g, '')) || 0
+    const monthlyDeductibleReliefValue = parseFloat(monthlyDeductibleRelief.replace(/,/g, '')) || 0
+
+    const grossRemuneration = grossBasicSalaryValue + allowancesValue
+
+    const { totalTax, breakdown, ssnitContribution } = calculateTax(grossRemuneration, grossBasicSalaryValue, monthlyDeductibleReliefValue)
+    const totalDeductions = totalTax + ssnitContribution
+    const netIncomeValue = grossRemuneration - totalDeductions
+    const effectiveTaxRate = grossRemuneration > 0 ? (totalDeductions / grossRemuneration) * 100 : 0
+
+    setResults({
+      grossRemuneration,
+      grossBasicSalary: grossBasicSalaryValue,
+      allowances: allowancesValue,
+      monthlyDeductibleRelief: monthlyDeductibleReliefValue,
+      totalTaxPayable: totalTax,
+      ssnitContribution,
+      totalDeductions,
+      netIncome: netIncomeValue,
+      effectiveTaxRate,
+      breakdown,
+    })
+  }, [grossBasicSalary, allowances, monthlyDeductibleRelief, calculateTax])
+
+  const handleNumberChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^\d.]/g, '')
+    const parts = value.split('.')
+    if (parts[0].length > 3) {
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    }
+    setter(parts.join('.'))
+  }
+
+  const formatNumber = (num: number) => {
+    return num.toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  }
+
+  const toggleBreakdown = () => {
+    setShowBreakdown(!showBreakdown)
+  }
+
+  return (
+    <div className='p-2 bg-[#FFFFFF] max-w-[560px] flex-col items-center justify-center m-2 rounded-[12px] font-jetbrains'>
+      <div className='border-[1px] rounded-[8px] p-4 w-full space-y-6'>
+        <h1 className='text-lg font-bold'>Monthly Income Tax Calculator</h1>
+        
+        <div className='grid grid-cols-2 gap-6'>
+          <div>
+            <label className='block mb-2 text-xs font-[500]'>Basic Salary *</label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 text-sm leading-5 font-[500]">GHS</span>
+              <Input 
+                type='text' 
+                value={grossBasicSalary}
+                onChange={handleNumberChange(setGrossBasicSalary)}
+                className={cn("rounded-[8px] pl-12 placeholder-[#A3A3A3] text-sm leading-5")}
+                placeholder="0.00"
+              />
+            </div>
+          </div>
+          <div>
+            <label className='block mb-2 text-xs font-[500]'>Allowances</label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 text-sm leading-5 font-[500]">GHS</span>
+              <Input 
+                type='text' 
+                value={allowances}
+                onChange={handleNumberChange(setAllowances)}
+                className={cn("rounded-[8px] pl-12 placeholder-[#A3A3A3]")}
+                placeholder="0.00"
+              />
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <label className='block mb-2 text-xs font-[500]'>Tax Relief</label>
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 text-sm leading-5 font-[500]">GHS</span>
+            <Input 
+              type='text' 
+              value={monthlyDeductibleRelief}
+              onChange={handleNumberChange(setMonthlyDeductibleRelief)}
+              className={cn("rounded-[8px] pl-12 placeholder-[#A3A3A3]")}
+              placeholder="0.00"
+            />
+          </div>
+        </div>
+        
+        <hr className="border-gray-200" />
+        
+        {results && (
+          <>
+            <div>
+              <p className='text-gray-500'>Your net salary is...</p>
+              <p className='text-4xl font-bold'>GHS {formatNumber(results.netIncome)}</p>
+            </div>
+            
+            <div>
+              <p className='text-gray-500'>Your total deduction is ...</p>
+              <p className='text-3xl font-bold'>GHS {formatNumber(results.totalDeductions)}</p>
+            </div>
+            
+            <div className='mt-6'>
+              <div className='h-4 bg-gray-200 rounded-full mb-6 overflow-hidden'>
+                <div className='h-full flex'>
+                  <div className='bg-[#3B82F6]' style={{width: `${(results.netIncome / results.grossRemuneration * 100).toFixed(1)}%`}}></div>
+                  <div className='bg-[#FB923C]' style={{width: `${(results.ssnitContribution / results.grossRemuneration * 100).toFixed(1)}%`}}></div>
+                  <div className='bg-[#DC2626]' style={{width: `${(results.totalTaxPayable / results.grossRemuneration * 100).toFixed(1)}%`}}></div>
+                </div>
+              </div>
+              <div className='space-y-2 text-xs'>
+                {[
+                  { label: 'Gross Salary', value: `GHS ${formatNumber(results.grossRemuneration)}`, percentage: '100%', color: '#525252' },
+                  { label: 'Net Salary', value: `GHS ${formatNumber(results.netIncome)}`, percentage: `${(results.netIncome / results.grossRemuneration * 100).toFixed(1)}%`, color: '#3B82F6' },
+                  { label: 'SSNIT', value: `GHS ${formatNumber(results.ssnitContribution)}`, percentage: `${(results.ssnitContribution / results.grossRemuneration * 100).toFixed(1)}%`, color: '#FB923C' },
+                  { label: 'Employee Payee', value: `GHS ${formatNumber(results.totalTaxPayable)}`, percentage: `${(results.totalTaxPayable / results.grossRemuneration * 100).toFixed(1)}%`, color: '#DC2626' },
+                ].map((item, index) => (
+                  <div key={index} className='flex items-center'>
+                    <div className='w-3 h-3 rounded-full mr-2' style={{backgroundColor: item.color}}></div>
+                    <span className='flex-grow'>{item.label}</span>
+                    <span className='mr-4'>{item.value}</span>
+                    <span className='w-12 text-right'>{item.percentage}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+        
+        <div className='flex justify-center mb-2'>
+          <Button 
+            variant="outline" 
+            className="w-[204px] rounded-full border-[1px]"
+            onClick={toggleBreakdown}
+          >
+            {showBreakdown ? "Hide tax breakdown" : "Show tax breakdown"}
+            {showBreakdown ? <ChevronUp className="ml-2 h-4 w-4" /> : <ChevronDown className="ml-2 h-4 w-4" />}
+          </Button>
+        </div>
+
+        <AnimatePresence>
+          {showBreakdown && results && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden mt-2"
+            >
+              <div className="p-4 bg-[#F7F7F7] rounded-[8px] border border-[#E5E5E5]">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-[#A3A3A3]">
+                      <th className="text-left py-2 font-normal">Range</th>
+                      <th className="text-right py-2 font-normal">Rate</th>
+                      <th className="text-right py-2 font-normal">Amount</th>
+                      <th className="text-right py-2 font-normal">Tax Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { range: ["GHS 0.00 -", "490.00"], rate: "0.0%", amount: "GHS 490.00", tax: results.breakdown.tax > 0 ? formatNumber(Math.min(490, results.breakdown.taxableIncome) * 0) : "0.00" },
+                      { range: ["GHS 490.00 -", "600.00"], rate: "5.0%", amount: "GHS 110.00", tax: results.breakdown.tax > 5.5 ? "5.50" : formatNumber(Math.max(0, Math.min(110, results.breakdown.taxableIncome - 490)) * 0.05) },
+                      { range: ["GHS 600.00 -", "730.00"], rate: "10.0%", amount: "GHS 130.00", tax: results.breakdown.tax > 18.5 ? "13.00" : formatNumber(Math.max(0, Math.min(130, results.breakdown.taxableIncome - 600)) * 0.1) },
+                      { range: ["GHS 730.00 -", "3,896.67"], rate: "17.5%", amount: "GHS 3,166.67", tax: results.breakdown.tax > 572.67 ? "554.17" : formatNumber(Math.max(0, Math.min(3166.67, results.breakdown.taxableIncome - 730)) * 0.175) },
+                      { range: ["GHS 3,896.67 -", "19,896.67"], rate: "25.0%", amount: "GHS 16,000.00", tax: results.breakdown.tax > 4572.67 ? "4,000.00" : formatNumber(Math.max(0, Math.min(16000, results.breakdown.taxableIncome - 3896.67)) * 0.25) },
+                      { range: ["GHS 19,896.67 -", "50,416.67"], rate: "30.0%", amount: "GHS 30,520.00", tax: formatNumber(Math.max(0, Math.min(30520, results.breakdown.taxableIncome - 19896.67)) * 0.3) },
+                      { range: ["Above", "GHS 50,416.67"], rate: "35.0%", amount: "-", tax: formatNumber(Math.max(0, results.breakdown.taxableIncome - 50416.67) * 0.35) },
+                    ]
+                    .filter(row => parseFloat(row.tax) > 0)
+                    .map((row, index) => (
+                      <tr key={index} className="border-b last:border-b-0">
+                        <td className="py-2">
+                          {row.range[0]}<br />{row.range[1]}
+                        </td>
+                        <td className="text-right py-2">{row.rate}</td>
+                        <td className="text-right py-2">{row.amount}</td>
+                        <td className="text-right py-2">GHS {row.tax}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="font-bold">
+                      <td colSpan={3} className="py-2">Total Tax</td>
+                      <td className="text-right py-2">GHS {formatNumber(results.totalTaxPayable)}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  )
+}
