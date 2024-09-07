@@ -155,9 +155,9 @@ export default function Widget() {
                 <div className='h-4 bg-gray-200 rounded-full mb-6 overflow-hidden'>
                   {results && results.grossRemuneration > 0 ? (
                     <div className='h-full flex space-x-[2px]'>
-                      <div className='bg-[#3B82F6]' style={{width: `calc(${(results.netIncome / results.grossRemuneration * 100).toFixed(1)}% - 1.33px)`}}></div>
-                      <div className='bg-[#FB923C]' style={{width: `calc(${(results.ssnitContribution / results.grossRemuneration * 100).toFixed(1)}% - 1.33px)`}}></div>
-                      <div className='bg-[#DC2626]' style={{width: `calc(${(results.totalTaxPayable / results.grossRemuneration * 100).toFixed(1)}% - 1.33px)`}}></div>
+                      <div className={`bg-[#3B82F6] w-[${(results.netIncome / results.grossRemuneration * 100).toFixed(1)}%]`}></div>
+                      <div className={`bg-[#FB923C] w-[${(results.ssnitContribution / results.grossRemuneration * 100).toFixed(1)}%]`}></div>
+                      <div className={`bg-[#DC2626] w-[${(results.totalTaxPayable / results.grossRemuneration * 100).toFixed(1)}%]`}></div>
                     </div>
                   ) : (
                     <div className='h-full bg-gray-300'></div>
@@ -200,7 +200,7 @@ export default function Widget() {
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
-                className="overflow-hidden"
+                className="overflow-hidden mb-12"
               >
                 <div className="p-4 bg-[#F7F7F7] rounded-[8px]">
                   <div className="overflow-x-auto">
@@ -235,8 +235,8 @@ export default function Widget() {
                       </tbody>
                       <tfoot>
                         <tr className="font-bold border-t border-[#E5E5E5] text-black">
-                          <td colSpan={2} className="py-2 sm:hidden">Total Tax</td>
-                          <td colSpan={3} className="py-2 text-right hidden sm:table-cell">Total Tax: GHS {formatNumber(results.breakdown.tax)}</td>
+                          <td className="py-2">Total Tax</td>
+                          <td className="py-2 text-right" colSpan={2}>GHS {formatNumber(results.breakdown.tax)}</td>
                         </tr>
                       </tfoot>
                     </table>
