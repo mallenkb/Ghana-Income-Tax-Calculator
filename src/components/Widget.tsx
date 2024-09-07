@@ -182,7 +182,7 @@ export default function Widget() {
             </>
           )}
           
-          <div className='flex justify-center mb-2'>
+          <div className='flex justify-center'>
             <Button 
               variant="outline" 
               className="w-full sm:w-auto px-4 py-2 rounded-full border-[1px] flex items-center justify-center"
@@ -200,7 +200,7 @@ export default function Widget() {
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
-                className="overflow-hidden mb-12"
+                className="overflow-hidden"
               >
                 <div className="p-4 bg-[#F7F7F7] rounded-[8px]">
                   <div className="overflow-x-auto">
@@ -248,7 +248,7 @@ export default function Widget() {
         </div>
 
         {/* Bottom dots */}
-        <div className="flex justify-between mt-3 p-4 pt-0">
+        <div className="flex justify-between p-4 pt-0">
           <div className="w-1 h-1 bg-[#171717] rounded-full"></div>
           <div className="w-1 h-1 bg-[#171717] rounded-full"></div>
         </div>
