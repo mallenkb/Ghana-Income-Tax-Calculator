@@ -82,158 +82,172 @@ export default function Widget() {
   }
 
   return (
-    <div className='pt-4 sm:pt-6 px-4 pb-4 bg-[#FFFFFF] max-w-[560px] flex-col items-center justify-center rounded-[12px] font-jetbrains'>
-      <div className='border-[1px] rounded-[8px] p-4 w-full space-y-6'>
-        <h1 className='text-lg font-bold'>Monthly Income Tax Calculator</h1>
-        
-        <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
-          <div>
-            <label className='block mb-2 text-xs font-[500]'>Basic Salary *</label>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 text-sm leading-5 font-[500]">GHS</span>
-              <Input 
-                type='text' 
-                value={grossBasicSalary}
-                onChange={handleNumberChange(setGrossBasicSalary)}
-                className={cn("rounded-[8px] pl-12 placeholder-[#A3A3A3] text-sm leading-5")}
-                placeholder="0.00"
-              />
+    <div className='pt-4 sm:pt-4 px-4 pb-4 bg-[#FFFFFF] max-w-[560px] flex-col items-center justify-center rounded-[12px] font-jetbrains relative'>
+      <div className='border-[1px] border-[#F0F0F0] rounded-[8px] p-4 w-full'>
+        <div className="flex justify-between mb-3">
+          <div className="w-1 h-1 bg-[#171717] rounded-full"></div>
+          <div className="w-1 h-1 bg-[#171717] rounded-full"></div>
+        </div>
+
+        <div className="space-y-6">
+          <h1 className='text-lg font-bold'>Monthly Income Tax Calculator</h1>
+          
+          <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
+            <div>
+              <label className='block mb-2 text-xs font-[500]'>
+                Basic Salary <span className="text-[#DC2626]">*</span>
+              </label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 text-sm leading-5 font-[500]">GHS</span>
+                <Input 
+                  type='text' 
+                  value={grossBasicSalary}
+                  onChange={handleNumberChange(setGrossBasicSalary)}
+                  className={cn("rounded-[8px] pl-12 placeholder-[#A3A3A3] text-sm leading-5")}
+                  placeholder="0.00"
+                />
+              </div>
+            </div>
+            <div>
+              <label className='block mb-2 text-xs font-[500]'>Allowances</label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 text-sm leading-5 font-[500]">GHS</span>
+                <Input 
+                  type='text' 
+                  value={allowances}
+                  onChange={handleNumberChange(setAllowances)}
+                  className={cn("rounded-[8px] pl-12 placeholder-[#A3A3A3]")}
+                  placeholder="0.00"
+                />
+              </div>
             </div>
           </div>
+          
           <div>
-            <label className='block mb-2 text-xs font-[500]'>Allowances</label>
+            <label className='block mb-2 text-xs font-[500]'>Tax Relief</label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 text-sm leading-5 font-[500]">GHS</span>
               <Input 
                 type='text' 
-                value={allowances}
-                onChange={handleNumberChange(setAllowances)}
+                value={monthlyDeductibleRelief}
+                onChange={handleNumberChange(setMonthlyDeductibleRelief)}
                 className={cn("rounded-[8px] pl-12 placeholder-[#A3A3A3]")}
                 placeholder="0.00"
               />
             </div>
           </div>
-        </div>
-        
-        <div>
-          <label className='block mb-2 text-xs font-[500]'>Tax Relief</label>
-          <div className="relative">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 text-sm leading-5 font-[500]">GHS</span>
-            <Input 
-              type='text' 
-              value={monthlyDeductibleRelief}
-              onChange={handleNumberChange(setMonthlyDeductibleRelief)}
-              className={cn("rounded-[8px] pl-12 placeholder-[#A3A3A3]")}
-              placeholder="0.00"
-            />
-          </div>
-        </div>
-        
-        <hr className="border-gray-200" />
-        
-        {results && (
-          <>
-            <div>
-              <p className='text-gray-500'>Your net salary is...</p>
-              <p className='text-4xl font-bold'>GHS {formatNumber(results.netIncome)}</p>
-            </div>
-            
-            <div>
-              <p className='text-gray-500'>Your total deduction is ...</p>
-              <p className='text-3xl font-bold'>GHS {formatNumber(results.totalDeductions)}</p>
-            </div>
-            
-            <div className='mt-6'>
-              <div className='h-4 bg-gray-200 rounded-full mb-6 overflow-hidden'>
-                <div className='h-full flex'>
-                  <div className='bg-[#3B82F6]' style={{width: `${(results.netIncome / results.grossRemuneration * 100).toFixed(1)}%`}}></div>
-                  <div className='bg-[#FB923C]' style={{width: `${(results.ssnitContribution / results.grossRemuneration * 100).toFixed(1)}%`}}></div>
-                  <div className='bg-[#DC2626]' style={{width: `${(results.totalTaxPayable / results.grossRemuneration * 100).toFixed(1)}%`}}></div>
+          
+          <hr className="border-gray-200" />
+          
+          {results && (
+            <>
+              <div>
+                <p className='text-gray-500'>Your net salary is...</p>
+                <p className='text-4xl font-bold'>GHS {formatNumber(results.netIncome)}</p>
+              </div>
+              
+              <div>
+                <p className='text-gray-500'>Your total deduction is ...</p>
+                <p className='text-3xl font-bold'>GHS {formatNumber(results.totalDeductions)}</p>
+              </div>
+              
+              <div className='mt-6'>
+                <div className='h-4 bg-gray-200 rounded-full mb-6 overflow-hidden'>
+                  <div className='h-full flex'>
+                    <div className='bg-[#3B82F6]' style={{width: `${(results.netIncome / results.grossRemuneration * 100).toFixed(1)}%`}}></div>
+                    <div className='bg-[#FB923C]' style={{width: `${(results.ssnitContribution / results.grossRemuneration * 100).toFixed(1)}%`}}></div>
+                    <div className='bg-[#DC2626]' style={{width: `${(results.totalTaxPayable / results.grossRemuneration * 100).toFixed(1)}%`}}></div>
+                  </div>
+                </div>
+                <div className='space-y-2 text-xs'>
+                  {[
+                    { label: 'Gross Salary', value: `GHS ${formatNumber(results.grossRemuneration)}`, percentage: '100%', color: '#525252' },
+                    { label: 'Net Salary', value: `GHS ${formatNumber(results.netIncome)}`, percentage: `${results.grossRemuneration ? (results.netIncome / results.grossRemuneration * 100).toFixed(1) : 0}%`, color: '#3B82F6' },
+                    { label: 'SSNIT', value: `GHS ${formatNumber(results.ssnitContribution)}`, percentage: `${results.grossRemuneration ? (results.ssnitContribution / results.grossRemuneration * 100).toFixed(1) : 0}%`, color: '#FB923C' },
+                    { label: 'Employee Payee', value: `GHS ${formatNumber(results.totalTaxPayable)}`, percentage: `${results.grossRemuneration ? (results.totalTaxPayable / results.grossRemuneration * 100).toFixed(1) : 0}%`, color: '#DC2626' },
+                  ].map((item, index) => (
+                    <div key={index} className='flex items-center'>
+                      <div className='w-3 h-3 rounded-full mr-2' style={{backgroundColor: item.color}}></div>
+                      <span className='flex-grow'>{item.label}</span>
+                      <span className='mr-4'>{item.value}</span>
+                      <span className='w-12 text-right'>{item.percentage}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-              <div className='space-y-2 text-xs'>
-                {[
-                  { label: 'Gross Salary', value: `GHS ${formatNumber(results.grossRemuneration)}`, percentage: '100%', color: '#525252' },
-                  { label: 'Net Salary', value: `GHS ${formatNumber(results.netIncome)}`, percentage: `${(results.netIncome / results.grossRemuneration * 100).toFixed(1)}%`, color: '#3B82F6' },
-                  { label: 'SSNIT', value: `GHS ${formatNumber(results.ssnitContribution)}`, percentage: `${(results.ssnitContribution / results.grossRemuneration * 100).toFixed(1)}%`, color: '#FB923C' },
-                  { label: 'Employee Payee', value: `GHS ${formatNumber(results.totalTaxPayable)}`, percentage: `${(results.totalTaxPayable / results.grossRemuneration * 100).toFixed(1)}%`, color: '#DC2626' },
-                ].map((item, index) => (
-                  <div key={index} className='flex items-center'>
-                    <div className='w-3 h-3 rounded-full mr-2' style={{backgroundColor: item.color}}></div>
-                    <span className='flex-grow'>{item.label}</span>
-                    <span className='mr-4'>{item.value}</span>
-                    <span className='w-12 text-right'>{item.percentage}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
-        
-        <div className='flex justify-center mb-2'>
-          <Button 
-            variant="outline" 
-            className="w-[204px] rounded-full border-[1px]"
-            onClick={toggleBreakdown}
-          >
-            {showBreakdown ? "Hide tax breakdown" : "Show tax breakdown"}
-            {showBreakdown ? <ChevronUp className="ml-2 h-4 w-4" /> : <ChevronDown className="ml-2 h-4 w-4" />}
-          </Button>
+            </>
+          )}
+          
+          <div className='flex justify-center mb-2'>
+            <Button 
+              variant="outline" 
+              className="w-[204px] rounded-full border-[1px]"
+              onClick={toggleBreakdown}
+            >
+              {showBreakdown ? "Hide tax breakdown" : "Show tax breakdown"}
+              {showBreakdown ? <ChevronUp className="ml-2 h-4 w-4" /> : <ChevronDown className="ml-2 h-4 w-4" />}
+            </Button>
+          </div>
+
+          <AnimatePresence>
+            {showBreakdown && results && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden mt-2"
+              >
+                <div className="p-4 bg-[#F7F7F7] rounded-[8px]">
+                  <table className="w-full text-sm text-[#404040]">
+                    <thead className="text-[#A3A3A3] border-b">
+                      <tr>
+                        <th className="text-left py-2 font-normal">Range</th>
+                        <th className="text-right py-2 font-normal">Rate</th>
+                        <th className="text-right py-2 font-normal hidden sm:table-cell">Amount</th>
+                        <th className="text-right py-2 font-normal">Tax Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody className="font-normal">
+                      {[
+                        { range: ["GHS 0.00 -", "490.00"], rate: "0.0%", amount: "GHS 490.00", tax: formatNumber(Math.min(490, results.breakdown.taxableIncome) * 0) },
+                        { range: ["GHS 490.00 -", "600.00"], rate: "5.0%", amount: "GHS 110.00", tax: results.breakdown.tax > 5.5 ? "5.50" : formatNumber(Math.max(0, Math.min(110, results.breakdown.taxableIncome - 490)) * 0.05) },
+                        { range: ["GHS 600.00 -", "730.00"], rate: "10.0%", amount: "GHS 130.00", tax: results.breakdown.tax > 18.5 ? "13.00" : formatNumber(Math.max(0, Math.min(130, results.breakdown.taxableIncome - 600)) * 0.1) },
+                        { range: ["GHS 730.00 -", "3,896.67"], rate: "17.5%", amount: "GHS 3,166.67", tax: results.breakdown.tax > 572.67 ? "554.17" : formatNumber(Math.max(0, Math.min(3166.67, results.breakdown.taxableIncome - 730)) * 0.175) },
+                        { range: ["GHS 3,896.67 -", "19,896.67"], rate: "25.0%", amount: "GHS 16,000.00", tax: results.breakdown.tax > 4572.67 ? "4,000.00" : formatNumber(Math.max(0, Math.min(16000, results.breakdown.taxableIncome - 3896.67)) * 0.25) },
+                        { range: ["GHS 19,896.67 -", "50,416.67"], rate: "30.0%", amount: "GHS 30,520.00", tax: formatNumber(Math.max(0, Math.min(30520, results.breakdown.taxableIncome - 19896.67)) * 0.3) },
+                        { range: ["Above", "GHS 50,416.67"], rate: "35.0%", amount: "-", tax: formatNumber(Math.max(0, results.breakdown.taxableIncome - 50416.67) * 0.35) },
+                      ]
+                      .filter((row, index) => index === 0 || parseFloat(row.tax) > 0)
+                      .map((row, index) => (
+                        <tr key={index} className="border-b last:border-b-0">
+                          <td className="py-2">
+                            {row.range[0]}<br />{row.range[1]}
+                          </td>
+                          <td className="text-right py-2">{row.rate}</td>
+                          <td className="text-right py-2 hidden sm:table-cell">{row.amount}</td>
+                          <td className="text-right py-2 font-normal text-[#404040]">GHS {row.tax}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr className="font-bold border-t border-[#E5E5E5] text-black">
+                        <td colSpan={2} className="py-2 sm:hidden">Total Tax</td>
+                        <td colSpan={3} className="py-2 hidden sm:table-cell">Total Tax</td>
+                        <td className="text-right py-2">GHS {formatNumber(results.totalTaxPayable)}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        <AnimatePresence>
-          {showBreakdown && results && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="overflow-hidden mt-2"
-            >
-              <div className="p-4 bg-[#F7F7F7] rounded-[8px] border border-[#E5E5E5]">
-                <table className="w-full text-sm">
-                  <thead className="text-[#A3A3A3] border-b">
-                    <tr>
-                      <th className="text-left py-2 font-normal">Range</th>
-                      <th className="text-right py-2 font-normal">Rate</th>
-                      <th className="text-right py-2 font-normal hidden sm:table-cell">Amount</th>
-                      <th className="text-right py-2 font-normal">Tax Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      { range: ["GHS 0.00 -", "490.00"], rate: "0.0%", amount: "GHS 490.00", tax: results.breakdown.tax > 0 ? formatNumber(Math.min(490, results.breakdown.taxableIncome) * 0) : "0.00" },
-                      { range: ["GHS 490.00 -", "600.00"], rate: "5.0%", amount: "GHS 110.00", tax: results.breakdown.tax > 5.5 ? "5.50" : formatNumber(Math.max(0, Math.min(110, results.breakdown.taxableIncome - 490)) * 0.05) },
-                      { range: ["GHS 600.00 -", "730.00"], rate: "10.0%", amount: "GHS 130.00", tax: results.breakdown.tax > 18.5 ? "13.00" : formatNumber(Math.max(0, Math.min(130, results.breakdown.taxableIncome - 600)) * 0.1) },
-                      { range: ["GHS 730.00 -", "3,896.67"], rate: "17.5%", amount: "GHS 3,166.67", tax: results.breakdown.tax > 572.67 ? "554.17" : formatNumber(Math.max(0, Math.min(3166.67, results.breakdown.taxableIncome - 730)) * 0.175) },
-                      { range: ["GHS 3,896.67 -", "19,896.67"], rate: "25.0%", amount: "GHS 16,000.00", tax: results.breakdown.tax > 4572.67 ? "4,000.00" : formatNumber(Math.max(0, Math.min(16000, results.breakdown.taxableIncome - 3896.67)) * 0.25) },
-                      { range: ["GHS 19,896.67 -", "50,416.67"], rate: "30.0%", amount: "GHS 30,520.00", tax: formatNumber(Math.max(0, Math.min(30520, results.breakdown.taxableIncome - 19896.67)) * 0.3) },
-                      { range: ["Above", "GHS 50,416.67"], rate: "35.0%", amount: "-", tax: formatNumber(Math.max(0, results.breakdown.taxableIncome - 50416.67) * 0.35) },
-                    ]
-                    .filter(row => parseFloat(row.tax) > 0)
-                    .map((row, index) => (
-                      <tr key={index} className="border-b last:border-b-0">
-                        <td className="py-2">
-                          {row.range[0]}<br />{row.range[1]}
-                        </td>
-                        <td className="text-right py-2">{row.rate}</td>
-                        <td className="text-right py-2 hidden sm:table-cell">{row.amount}</td>
-                        <td className="text-right py-2 font-bold">GHS {row.tax}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr className="font-bold">
-                      <td colSpan={2} className="py-2 sm:hidden">Total Tax</td>
-                      <td colSpan={3} className="py-2 hidden sm:table-cell">Total Tax</td>
-                      <td className="text-right py-2">GHS {formatNumber(results.totalTaxPayable)}</td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <div className="flex justify-between mt-3">
+          <div className="w-1 h-1 bg-[#171717] rounded-full"></div>
+          <div className="w-1 h-1 bg-[#171717] rounded-full"></div>
+        </div>
       </div>
     </div>
   )
