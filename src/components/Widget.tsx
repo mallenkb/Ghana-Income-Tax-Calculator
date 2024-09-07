@@ -82,7 +82,7 @@ export default function Widget() {
   }
 
   return (
-    <div className='p-2 sm:p-4 bg-[#FFFFFF] max-w-[560px] flex-col items-center justify-center m-2 rounded-[12px] font-jetbrains'>
+    <div className='pt-4 sm:pt-6 px-4 pb-4 bg-[#FFFFFF] max-w-[560px] flex-col items-center justify-center rounded-[12px] font-jetbrains'>
       <div className='border-[1px] rounded-[8px] p-4 w-full space-y-6'>
         <h1 className='text-lg font-bold'>Monthly Income Tax Calculator</h1>
         
@@ -192,8 +192,8 @@ export default function Widget() {
             >
               <div className="p-4 bg-[#F7F7F7] rounded-[8px] border border-[#E5E5E5]">
                 <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b text-[#A3A3A3]">
+                  <thead className="text-[#A3A3A3] border-b">
+                    <tr>
                       <th className="text-left py-2 font-normal">Range</th>
                       <th className="text-right py-2 font-normal">Rate</th>
                       <th className="text-right py-2 font-normal hidden sm:table-cell">Amount</th>
@@ -218,13 +218,14 @@ export default function Widget() {
                         </td>
                         <td className="text-right py-2">{row.rate}</td>
                         <td className="text-right py-2 hidden sm:table-cell">{row.amount}</td>
-                        <td className="text-right py-2">GHS {row.tax}</td>
+                        <td className="text-right py-2 font-bold">GHS {row.tax}</td>
                       </tr>
                     ))}
                   </tbody>
                   <tfoot>
                     <tr className="font-bold">
-                      <td colSpan={3} className="py-2">Total Tax</td>
+                      <td colSpan={2} className="py-2 sm:hidden">Total Tax</td>
+                      <td colSpan={3} className="py-2 hidden sm:table-cell">Total Tax</td>
                       <td className="text-right py-2">GHS {formatNumber(results.totalTaxPayable)}</td>
                     </tr>
                   </tfoot>
