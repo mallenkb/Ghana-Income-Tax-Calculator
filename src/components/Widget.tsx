@@ -160,7 +160,7 @@ export default function Widget() {
               <div className='space-y-2 text-xs'>
                 {[
                   { label: 'Gross Salary', value: `GHS ${formatNumber(results.grossRemuneration)}`, percentage: '100%', color: '#525252' },
-                  { label: 'SSNIT', value: `GHS ${formatNumber(results.ssnitContribution)}`, percentage: `${results.grossRemuneration ? (results.ssnitContribution / results.grossRemuneration * 100).toFixed(1) : 0}%`, color: '#FB923C' },
+                  { label: 'SSNIT (5.5% of Basic Salary)', value: `GHS ${formatNumber(results.ssnitContribution)}`, percentage: `${results.grossRemuneration ? (results.ssnitContribution / results.grossRemuneration * 100).toFixed(1) : 0}%`, color: '#FB923C' },
                   { label: 'Employee Payee', value: `GHS ${formatNumber(results.totalTaxPayable)}`, percentage: `${results.grossRemuneration ? (results.totalTaxPayable / results.grossRemuneration * 100).toFixed(1) : 0}%`, color: '#DC2626' },
                   { label: 'Net Salary', value: `GHS ${formatNumber(results.netIncome)}`, percentage: `${results.grossRemuneration ? (results.netIncome / results.grossRemuneration * 100).toFixed(1) : 0}%`, color: '#3B82F6' },
                 ].map((item, index) => (
@@ -194,9 +194,9 @@ export default function Widget() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="overflow-hidden mt-2"
+              className="overflow-hidden"
             >
-              <div className="p-4 bg-[#F7F7F7] rounded-[8px] border border-[#E5E5E5]">
+              <div className="p-4 bg-[#F7F7F7] rounded-[8px]">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b text-[#A3A3A3]">
