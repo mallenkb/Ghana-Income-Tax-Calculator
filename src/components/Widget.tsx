@@ -194,8 +194,12 @@ export default function Widget() {
         {results && (
           <>
             <div>
-              <p className='text-gray-500'>Your net salary is...</p>
-              <p className='text-4xl font-bold'>GHS {formatNumber(results.netIncome)}</p>
+              <p className='text-gray-500'>
+                {mode === 'basicToNet' ? 'Your net salary is...' : 'Your basic salary is...'}
+              </p>
+              <p className='text-4xl font-bold'>
+                GHS {formatNumber(mode === 'basicToNet' ? results.netIncome : results.grossBasicSalary)}
+              </p>
             </div>
             
             <div>
