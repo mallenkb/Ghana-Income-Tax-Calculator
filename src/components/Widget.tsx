@@ -62,8 +62,6 @@ export default function Widget() {
 
   const handleModeChange = (newMode: 'basicToNet' | 'netToBasic') => {
     setMode(newMode)
-    setGrossBasicSalary("")
-    setNetSalary("")
   }
 
   useEffect(() => {
