@@ -118,7 +118,7 @@ export default function Widget() {
   }
 
   return (
-    <div className='pt-4 sm:pt-4 px-4 pb-4 bg-[#FFFFFF] w-full sm:max-w-[560px] flex-col items-center justify-center sm:rounded-[12px] font-jetbrains'>
+    <div className='pt-4 sm:pt-4 px-4 pb-4 bg-[#FFFFFF] w-full sm:max-w-[560px] flex-col items-center justify-center sm:rounded-[12px] font-jetbrains shadow-sm'>
       <div className="space-y-6 border border-[#E5E5E5] rounded-[8px] p-4">
         {/* Top dots */}
         <div className="flex justify-between mb-3">
