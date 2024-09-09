@@ -8,10 +8,12 @@ import { AnimatePresence, motion } from "framer-motion"
 
 export default function Widget() {
   const [grossBasicSalary, setGrossBasicSalary] = useState("")
+  const [netSalary, setNetSalary] = useState("")
   const [allowances, setAllowances] = useState("")
   const [monthlyDeductibleRelief, setMonthlyDeductibleRelief] = useState("")
   const [results, setResults] = useState<any>(null)
   const [showBreakdown, setShowBreakdown] = useState(false)
+  const [mode, setMode] = useState<'basicToNet' | 'netToBasic'>('basicToNet')
 
   const calculateTax = useCallback((grossRemuneration: number, grossBasicSalary: number, monthlyDeductibleRelief: number): { totalTax: number; breakdown: any; ssnitContribution: number } => {
     const ssnit = 0.055 * grossBasicSalary;
@@ -38,17 +40,51 @@ export default function Widget() {
     };
   }, [])
 
+  const calculateGrossFromNet = useCallback((targetNet: number, allowances: number, monthlyDeductibleRelief: number): number => {
+    let low = 0;
+    let high = targetNet * 2;
+
+    while (high - low > 0.01) {
+      const mid = (low + high) / 2;
+      const { totalTax, ssnitContribution } = calculateTax(mid + allowances, mid, monthlyDeductibleRelief);
+      const calculatedNet = mid + allowances - totalTax - ssnitContribution;
+      
+      if (Math.abs(calculatedNet - targetNet) < 0.01) return mid;
+      if (calculatedNet > targetNet) {
+        high = mid;
+      } else {
+        low = mid;
+      }
+    }
+
+    return (low + high) / 2;
+  }, [calculateTax]);
+
+  const handleModeChange = (newMode: 'basicToNet' | 'netToBasic') => {
+    setMode(newMode)
+    setGrossBasicSalary("")
+    setNetSalary("")
+  }
+
   useEffect(() => {
-    const grossBasicSalaryValue = parseFloat(grossBasicSalary.replace(/,/g, '')) || 0
-    const allowancesValue = parseFloat(allowances.replace(/,/g, '')) || 0
-    const monthlyDeductibleReliefValue = parseFloat(monthlyDeductibleRelief.replace(/,/g, '')) || 0
+    const inputValue = parseFloat((mode === 'basicToNet' ? grossBasicSalary : netSalary).replace(/,/g, '')) || 0;
+    const allowancesValue = parseFloat(allowances.replace(/,/g, '')) || 0;
+    const monthlyDeductibleReliefValue = parseFloat(monthlyDeductibleRelief.replace(/,/g, '')) || 0;
 
-    const grossRemuneration = grossBasicSalaryValue + allowancesValue
+    let grossBasicSalaryValue, grossRemuneration;
 
-    const { totalTax, breakdown, ssnitContribution } = calculateTax(grossRemuneration, grossBasicSalaryValue, monthlyDeductibleReliefValue)
-    const totalDeductions = totalTax + ssnitContribution
-    const netIncomeValue = grossRemuneration - totalDeductions
-    const effectiveTaxRate = grossRemuneration > 0 ? (totalDeductions / grossRemuneration) * 100 : 0
+    if (mode === 'netToBasic') {
+      grossBasicSalaryValue = calculateGrossFromNet(inputValue, allowancesValue, monthlyDeductibleReliefValue);
+      grossRemuneration = grossBasicSalaryValue + allowancesValue;
+    } else {
+      grossBasicSalaryValue = inputValue;
+      grossRemuneration = grossBasicSalaryValue + allowancesValue;
+    }
+
+    const { totalTax, breakdown, ssnitContribution } = calculateTax(grossRemuneration, grossBasicSalaryValue, monthlyDeductibleReliefValue);
+    const totalDeductions = totalTax + ssnitContribution;
+    const netIncomeValue = grossRemuneration - totalDeductions;
+    const effectiveTaxRate = grossRemuneration > 0 ? (totalDeductions / grossRemuneration) * 100 : 0;
 
     setResults({
       grossRemuneration,
@@ -61,8 +97,8 @@ export default function Widget() {
       netIncome: netIncomeValue,
       effectiveTaxRate,
       breakdown,
-    })
-  }, [grossBasicSalary, allowances, monthlyDeductibleRelief, calculateTax])
+    });
+  }, [grossBasicSalary, netSalary, allowances, monthlyDeductibleRelief, calculateTax, mode, calculateGrossFromNet]);
 
   const handleNumberChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^\d.]/g, '')
@@ -93,15 +129,32 @@ export default function Widget() {
         {/* Main content */}
         <h1 className='text-lg font-bold'>Monthly Income Tax Calculator</h1>
         
+        <div className="flex rounded-full bg-gray-100 p-1">
+          {['basicToNet', 'netToBasic'].map((option) => (
+            <button
+              key={option}
+              className={cn(
+                "flex-1 text-sm leading-5 font-medium py-2 px-4 rounded-full transition-colors duration-200",
+                mode === option ? "bg-white shadow-sm" : "text-gray-500 hover:text-gray-700"
+              )}
+              onClick={() => handleModeChange(option as 'basicToNet' | 'netToBasic')}
+            >
+              {option === 'basicToNet' ? 'Basic to Net' : 'Net to Basic'}
+            </button>
+          ))}
+        </div>
+        
         <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
           <div>
-            <label className='block mb-2 text-xs font-[500]'>Basic Salary *</label>
+            <label className='block mb-2 text-xs font-[500]'>
+              {mode === 'basicToNet' ? 'Basic Salary' : 'Net Salary'} <span className="text-red-500">*</span>
+            </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 text-sm leading-5 font-[500]">GHS</span>
               <Input 
                 type='text' 
-                value={grossBasicSalary}
-                onChange={handleNumberChange(setGrossBasicSalary)}
+                value={mode === 'basicToNet' ? grossBasicSalary : netSalary}
+                onChange={handleNumberChange(mode === 'basicToNet' ? setGrossBasicSalary : setNetSalary)}
                 className={cn("rounded-[8px] pl-12 placeholder-[#A3A3A3] text-sm leading-5")}
                 placeholder="0.00"
               />
@@ -215,13 +268,13 @@ export default function Widget() {
                       {[
                         { range: ["GHS 0.00 -", "490.00"], rate: "0.0%", tax: results.breakdown.tax > 0 ? formatNumber(Math.min(490, results.breakdown.taxableIncome) * 0) : "0.00" },
                         { range: ["GHS 490.00 -", "600.00"], rate: "5.0%", tax: results.breakdown.tax > 5.5 ? "5.50" : formatNumber(Math.max(0, Math.min(110, results.breakdown.taxableIncome - 490)) * 0.05) },
-                        { range: ["GHS 600.00 -", "730.00"], rate: "10.0%", tax: results.breakdown.tax > 18.5 ? "13.00" : formatNumber(Math.max(0, Math.min(130, results.breakdown.taxableIncome - 600)) * 0.1) },
+                        { range: ["GHS 600.00 -", "730.00"], rate: "10.0%", tax: results.breakdown.tax > 18.5 ? "13.00" : formatNumber(Math.max(0, Math.min(130, results.breakdown.taxableIncome - 600)) * 0.10) },
                         { range: ["GHS 730.00 -", "3,896.67"], rate: "17.5%", tax: results.breakdown.tax > 572.67 ? "554.17" : formatNumber(Math.max(0, Math.min(3166.67, results.breakdown.taxableIncome - 730)) * 0.175) },
                         { range: ["GHS 3,896.67 -", "19,896.67"], rate: "25.0%", tax: results.breakdown.tax > 4572.67 ? "4,000.00" : formatNumber(Math.max(0, Math.min(16000, results.breakdown.taxableIncome - 3896.67)) * 0.25) },
                         { range: ["GHS 19,896.67 -", "50,416.67"], rate: "30.0%", tax: formatNumber(Math.max(0, Math.min(30520, results.breakdown.taxableIncome - 19896.67)) * 0.3) },
                         { range: ["Above", "GHS 50,416.67"], rate: "35.0%", tax: formatNumber(Math.max(0, results.breakdown.taxableIncome - 50416.67) * 0.35) },
                       ]
-                      .filter(row => parseFloat(row.tax) > 0)
+                      .filter((row, index) => index === 0 || parseFloat(row.tax ?? '0') > 0)
                       .map((row, index) => (
                         <tr key={index} className="border-b last:border-b-0">
                           <td className="py-2">
