@@ -453,7 +453,7 @@ export default function Widget() {
                             (results.netIncome / results.grossRemuneration) *
                             100
                           ).toFixed(1)}% - 1.33px)`,
-                        }}
+                        }} 
                       ></div>
                       <div
                         className="bg-[#FB923C]"
