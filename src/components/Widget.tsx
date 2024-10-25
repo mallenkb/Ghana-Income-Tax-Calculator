@@ -550,7 +550,7 @@ export default function Widget() {
             <div className="flex justify-center mb-2">
               <Button
                 variant="outline"
-                className="inline-flex items-center justify-center px-4 py-2 rounded-full border-[1px] text-gray-500 hover:bg-gray-100"
+                className="w-full sm:w-auto px-4 py-2 rounded-full border-[1px] flex items-center justify-center"
                 onClick={toggleBreakdown}
               >
                 <span className="mr-2">
